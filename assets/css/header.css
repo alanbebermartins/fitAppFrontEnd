@@ -1,0 +1,9 @@
+header nav .header-links a, 
+header nav .header-links a:link, 
+header nav .header-links a:visited, 
+header nav .header-links a:hover, 
+header nav .header-links a:active {
+    text-decoration: none;
+    color: inherit;
+    outline: none; /* Remove a borda de foco em alguns navegadores */
+}
