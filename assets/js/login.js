@@ -87,12 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const data = await response.json();
-
-            localStorage.setItem("access_token", data.access);
-            localStorage.setItem("refresh_token", data.refresh);
-
-            window.location.href = "/dashboard.html";
+            window.location.replace("/dashboard.html");
 
         } catch (error) {
             console.error("Erro de conexão:", error);
