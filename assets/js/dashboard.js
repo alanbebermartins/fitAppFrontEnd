@@ -1,9 +1,3 @@
-window.addEventListener("pageshow", function (event) {
-    if (event.persisted) {
-        window.location.reload();
-    }
-});
-
 document.addEventListener("DOMContentLoaded", async () => {
     try {
 
@@ -12,13 +6,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             credentials: "include"
         });
 
-        if (response.status === 401) {
-            window.location.replace("/index.html");
-            return;
-        }
-
         if (!response.ok) {
             console.error("Erro inesperado:", response.status);
+            window.location.href = "/index.html";
             return;
         }
 
