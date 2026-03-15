@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const loginButton = document.getElementById('loginButton');
     const userEmailInput = document.getElementById('userEmail');
     const userPasswordInput = document.getElementById('userPassword');
-
     const errorMessageUserEmail = document.getElementById('errorMessageUserEmail');
     const errorMessageUserPassword = document.getElementById('errorMessageUserPassword');
     const errorMessageForm = document.getElementById('errorMessageForm');
@@ -67,37 +66,52 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        try {
-            const response = await fetch("http://127.0.0.1:8000/api/auth/login/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    email: userEmail, // SIMPLEJWT usa username
-                    password: userPassword
-                })
-            });
-            console.log('RETORNO DO RESPONSE = ',response)
+        // limpa cookies antigos
+        document.cookie = "access_token=; Max-Age=0; path=/";
+        document.cookie = "refresh_token=; Max-Age=0; path=/";
 
-            if (!response.ok) {
-                errorMessageForm.style.display = "block";
-                errorMessageForm.innerHTML = "Email ou senha incorretos!";
+        fetch("http://127.0.0.1:8000/api/auth/login/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                email: userEmail,
+                password: userPassword
+            })
+        })
+        .then(function(response) {
+
+            console.log("STATUS:", response.status);
+
+            return response.json().then(function(data) {
+                return { status: response.status, data: data };
+            });
+
+        })
+        .then(function(result) {
+
+            console.log("RETORNO API:", result);
+
+            if (result.status === 200) {
+                window.location.replace("/home");
                 return;
             }
 
-            window.location.replace("/dashboard.html");
+            errorMessageForm.style.display = "block";
+            errorMessageForm.innerHTML = result.data.error || "Erro no login";
 
-        } catch (error) {
-            console.error("Erro de conexão:", error);
+        })
+        .catch(function(error) {
+
+            console.error("ERRO FETCH:", error);
 
             errorMessageForm.style.display = "block";
-            errorMessageForm.innerHTML = "Erro ao conectar no servidor!";
-        }
+            errorMessageForm.innerHTML = "Erro ao conectar com o servidor.";
 
-        userEmailInput.value = "";
-        userPasswordInput.value = "";
+        });
+
     });
 
     userEmailInput.addEventListener('input', function() {
@@ -190,7 +204,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-
         // ---\/---START - BLOCO TRY CATCH DA API DE CADASTRAR ---\/---
 
         try {
@@ -221,7 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
             errorMessageRegisterForm.innerHTML = "Erro ao conectar no servidor!";
             
         }
-
 
         // ---/\---END - BLOCO TRY CATCH DA API DE CADASTRAR ---/\---
 
@@ -280,6 +292,5 @@ document.addEventListener('DOMContentLoaded', function() {
             errorMessageRegisterUserPassword.style.display = "block";
         }
     });
-
 
 });
