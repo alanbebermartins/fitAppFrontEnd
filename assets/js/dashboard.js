@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!response.ok) {
             console.error("Erro inesperado:", response.status);
-            window.location.href = "/index.html";
+            window.location.href = "/login";
             return;
         }
 
@@ -17,6 +17,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } catch (error) {
         console.error("Erro de conexão:", error);
-        window.location.replace("/index.html");
+        window.location.replace("/login");
     }
 });
