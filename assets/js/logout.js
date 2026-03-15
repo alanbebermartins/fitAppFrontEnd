@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.clear();
 
         // 🔥 Remove do histórico (não permite voltar)
-        window.location.replace("/index.html");
+        window.location.replace("/login");
 
     });
 
