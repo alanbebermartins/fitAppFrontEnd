@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const user = await response.json();
-        console.log("Usuário validado:", user);
 
     } catch (error) {
         console.error("Erro de conexão:", error);

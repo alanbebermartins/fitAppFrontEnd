@@ -1,49 +1,86 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    function gerarUUID() {
-        // Método moderno (RFC 4122 UUID v4)
-        if (typeof crypto !== "undefined" && crypto.randomUUID) {
-            return crypto.randomUUID();
-        }
+    // --------- BUSCAR CATEGORIAS DE GRUPOS MUSCULARES --------------
 
-        // Fallback (também RFC 4122 UUID v4)
-        if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-            return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-            const r = crypto.getRandomValues(new Uint8Array(1))[0] & 15;
-            const v = c === "x" ? r : (r & 0x3) | 0x8;
-            return v.toString(16);
+    const exerciseSelect = document.getElementById('exerciseSelect');
+    
+    function getCategories() {
+        return fetch("http://127.0.0.1:8000/api/get_list_all_muscle_groups/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        })
+        .then(function(response) { 
+            return response.json().then(function(data) {
+                return { status: response.status, data: data };
             });
-        }
-
-        // Último fallback (NÃO recomendado, mas evita quebrar o sistema)
-        let d = new Date().getTime();
-        let d2 = (performance && performance.now && performance.now() * 1000) || 0;
-
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-            let r = Math.random() * 16;
-
-            if (d > 0) {
-            r = (d + r) % 16 | 0;
-            d = Math.floor(d / 16);
-            } else {
-            r = (d2 + r) % 16 | 0;
-            d2 = Math.floor(d2 / 16);
-            }
-
-            return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+        })
+        .catch(function(error) {
+            console.error("ERRO FETCH:", error);
         });
     }
 
-    const exercizeList = [
-        {excersizeId:`${gerarUUID()}`,exersizeName:'Supino Reto'},
-        {excersizeId:`${gerarUUID()}`,exersizeName:'Supino Incliado'},
-        {excersizeId:`${gerarUUID()}`,exersizeName:'Voador na máquina'},
-        {excersizeId:`${gerarUUID()}`,exersizeName:'Manguito'},
-    ]
+    // ----- BUSCAR EXERCÍCIOS ---------------------
+    
+    function getExercises() {
+        
+        return fetch("http://127.0.0.1:8000/api/get_list_all_exercises/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include"
+        })
+        .then(function(response) {
+            return response.json().then(function(data) {
+                return { status: response.status, data: data };
+            });
+        })
+        .catch(function(error) {
+            console.error("ERRO FETCH:", error);
+        });
+
+    }
+
+    getCategories().then(function(result) {
+        // Popula o select com os grupos musculares
+        const listMuscleGroup = result && result.data ? result.data : [];
+        const selectMuscleGroup = document.getElementById('selectMuscleGroup');
+
+        listMuscleGroup.forEach(function(item) {
+            let option = new Option(item.muscle_group, item.muscle_group);
+            selectMuscleGroup.add(option);
+        });
+
+        selectMuscleGroup.addEventListener('change', function() {
+            const selectedOption = selectMuscleGroup.options[selectMuscleGroup.selectedIndex];
+            if (!selectedOption) {
+                return;
+            }
+
+            const selectedText = selectedOption.textContent;
+
+            exerciseSelect.innerHTML = '';
+
+            getExercises().then(function(result) {
+                // Popula o select com os exercícios filtrados pelo grupo muscular selecionado
+                const listExercises = result && result.data ? result.data : [];
+                const filteredExercisesList = listExercises
+                    .filter(item => item.muscle_group === selectedText)
+                    .sort((a, b) => a.exercise_name.localeCompare(b.exercise_name));
+
+                filteredExercisesList.forEach(function(item) {
+                    let option = new Option(item.exercise_name, item.uuid_exercise_id);
+                    exerciseSelect.add(option);
+                });
+            });
+        });
+    });
 
     // Inputs do DOM
     const saveSendReps = document.getElementById('saveSendReps');
-    const idExercise = 2; // ID fixo, você pode mudar dinamicamente
     const weight = document.getElementById('weight');
     const firstSetReps = document.getElementById('firstSetReps');
     const secondSetReps = document.getElementById('secondSetReps');
@@ -51,32 +88,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const fourthSetReps = document.getElementById('fourthSetReps');
     const fieldRepsError = document.getElementById('fieldRepsError');
     const selectExercise = document.getElementById('selectExercise');
+
     let uuidSelecionado = null;
 
-
-    exercizeList.forEach(item => {
-        let option = new Option(item.exersizeName, item.excersizeId);
-        selectExercise.add(option)
-    })
-
-    selectExercise.addEventListener("change", function () {
-        uuidSelecionado = selectExercise.value; // pega SOMENTE o value da opção atual selecionada
-
-        console.log("UUID selecionado:", uuidSelecionado);
+    exerciseSelect.addEventListener("change", function () {
+        uuidSelecionado = exerciseSelect.value; // pega SOMENTE o value da opção atual selecionada
 
         // Se quiser pegar o texto da opção selecionada também:
-        const textoSelecionado = selectExercise.options[selectExercise.selectedIndex].text;
-        console.log("Texto selecionado:", textoSelecionado);
+        const textoSelecionado = exerciseSelect.options[exerciseSelect.selectedIndex].text;
     });
-
-
     
     // Ao clicar no botão
     saveSendReps.addEventListener('click', function(event) {
         event.preventDefault();
-
+        const selectMuscleGroup = document.getElementById('selectMuscleGroup');
         // Verifica se todos os campos estão preenchidos
-        if (weight.value && firstSetReps.value && secondSetReps.value && thirdSetReps.value && fourthSetReps.value && selectExercise.value) {
+        if (weight.value && firstSetReps.value && secondSetReps.value && thirdSetReps.value && fourthSetReps.value && exerciseSelect.value) {
 
             // Cria objeto treino
             const treino = {
@@ -107,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                console.log("Treino salvo com sucesso:", data);
                 // Opcional: limpar inputs após envio
                 weight.value = '';
                 firstSetReps.value = '';
@@ -115,12 +141,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 thirdSetReps.value = '';
                 fourthSetReps.value = '';
                 fieldRepsError.style.display = ''
-                selectExercise.value = "";
+                selectMuscleGroup.value = "";
+                exerciseSelect.value = "";
             })
             .catch(error => {
                 console.error("Erro ao salvar treino:", error);
             });
-
+            window.location.reload()
         } else {
             console.warn("Todos os campos devem ser preenchidos!");
             fieldRepsError.innerText = 'Campos(s) Obrigatório(s)'
