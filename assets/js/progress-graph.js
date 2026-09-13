@@ -3,7 +3,39 @@ document.addEventListener('DOMContentLoaded', function() {
     // --------- BUSCAR CATEGORIAS DE GRUPOS MUSCULARES --------------
 
     const exerciseSelect = document.getElementById('exerciseSelect');
+    const selectMuscleGroup = document.getElementById('selectMuscleGroup');
     const searchBtn = document.getElementById('searchBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const ctx = document.getElementById('progressChart');
+
+    let progressChart = null;
+
+    function renderEmptyChart() {
+        if (progressChart) {
+            progressChart.destroy();
+        }
+
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Evolução da carga de treino',
+                    data: [],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    renderEmptyChart();
     
     function getCategories() {
         return fetch("http://127.0.0.1:8000/api/get_list_all_muscle_groups/", {
@@ -48,7 +80,6 @@ document.addEventListener('DOMContentLoaded', function() {
     getCategories().then(function(result) {
         // Popula o select com os grupos musculares
         const listMuscleGroup = result && result.data ? result.data : [];
-        const selectMuscleGroup = document.getElementById('selectMuscleGroup');
 
         listMuscleGroup.forEach(function(item) {
             let option = new Option(item.muscle_group, item.muscle_group);
@@ -101,46 +132,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function generateChart(data) {
-        // console.log("Gerando gráfico com os dados:", data);
+        const exercisesArray = data.data;
 
-        const exercisesArray = data.data
-
-        console.log("exercisesArray", exercisesArray);
-
-        let listWeight = [];
-        let listDate = [];
+        const listWeight = [];
+        const listDate = [];
 
         for (let i = 0; i < exercisesArray.length; i++) {
             const exercise = exercisesArray[i];
-            // console.log("exercise", exercise);
             listWeight.push(exercise.weight_kg);
             listDate.push(exercise.training_date);
         }
 
-        console.log("listWeight", listWeight);
-        console.log("listDate", listDate);
+        if (!progressChart) {
+            renderEmptyChart();
+        }
 
-
-        const ctx = document.getElementById('teste');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-            labels: listDate,
-            datasets: [{
-                label: 'Evolução da carga de treino',
-                data: listWeight,
-                borderWidth: 1
-            }]
-            },
-            options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-            }
-        });
+        progressChart.data.labels = listDate;
+        progressChart.data.datasets[0].data = listWeight;
+        progressChart.update();
     }
 
     searchBtn.addEventListener('click', async function(event) {
@@ -154,6 +163,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const returnedData = await getFilteredRealizedExercises(selectedExerciseId);
 
         generateChart(returnedData)
+    });
+
+    clearBtn.addEventListener('click', function(event) {
+        event.preventDefault();
+        console.log('Botão Limpar consulta clicado');
+
+        if (selectMuscleGroup) {
+            selectMuscleGroup.selectedIndex = -1;
+            selectMuscleGroup.value = '';
+        }
+
+        if (exerciseSelect) {
+            exerciseSelect.innerHTML = '';
+            exerciseSelect.selectedIndex = -1;
+            exerciseSelect.value = '';
+        }
+
+        renderEmptyChart();
     });
 
 });
