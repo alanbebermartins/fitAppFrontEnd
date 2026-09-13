@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.cookie = "access_token=; Max-Age=0; path=/";
         document.cookie = "refresh_token=; Max-Age=0; path=/";
 
-        fetch("http://127.0.0.1:8000/api/auth/login/", {
+        fetch(`${API_BASE_URL}/api/auth/login/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ---\/---START - BLOCO TRY CATCH DA API DE CADASTRAR ---\/---
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/auth/register/", {
+            const response = await fetch(`${API_BASE_URL}/api/auth/register/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

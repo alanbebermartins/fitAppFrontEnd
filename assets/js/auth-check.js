@@ -1,6 +1,6 @@
 (function () {
 
-    fetch("http://127.0.0.1:8000/api/auth/check/", {
+    fetch(`${API_BASE_URL}/api/auth/check/`, {
         method: "GET",
         credentials: "include"
     })

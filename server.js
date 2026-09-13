@@ -2,7 +2,8 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
-const PORT = 5500;
+const PORT = process.env.PORT || 5500;
+const API_BASE_URL = "https://fitappbackend-e4rt.onrender.com";
 
 const server = http.createServer((req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host || "127.0.0.1"}`);
@@ -53,6 +54,6 @@ const server = http.createServer((req, res) => {
   }
 });
 
-server.listen(PORT, "127.0.0.1", () => {
-  console.log(`Servidor rodando em http://127.0.0.1:${PORT}`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Servidor rodando em http://0.0.0.0:${PORT}`);
 });

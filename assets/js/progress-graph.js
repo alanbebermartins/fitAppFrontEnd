@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderEmptyChart();
     
     function getCategories() {
-        return fetch("http://127.0.0.1:8000/api/get_list_all_muscle_groups/", {
+        return fetch(`${API_BASE_URL}/api/get_list_all_muscle_groups/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function getExercises() {
         
-        return fetch("http://127.0.0.1:8000/api/get_list_all_exercises/", {
+        return fetch(`${API_BASE_URL}/api/get_list_all_exercises/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function getFilteredRealizedExercises(uuid){
-        return fetch(`http://127.0.0.1:8000/api/get_list_all_realized_exercises/${uuid}/`, {
+        return fetch(`${API_BASE_URL}/api/get_list_all_realized_exercises/${uuid}/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"

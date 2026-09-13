@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const exerciseSelect = document.getElementById('exerciseSelect');
     
     function getCategories() {
-        return fetch("http://127.0.0.1:8000/api/get_list_all_muscle_groups/", {
+        return fetch(`${API_BASE_URL}/api/get_list_all_muscle_groups/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function getExercises() {
         
-        return fetch("http://127.0.0.1:8000/api/get_list_all_exercises/", {
+        return fetch(`${API_BASE_URL}/api/get_list_all_exercises/`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             // Envia para a API Django
-            fetch("http://127.0.0.1:8000/api/training/register/", {
+            fetch(`${API_BASE_URL}/api/training/register/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
