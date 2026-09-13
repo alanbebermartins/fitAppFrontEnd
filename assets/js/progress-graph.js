@@ -100,40 +100,60 @@ document.addEventListener('DOMContentLoaded', function() {
         
     }
 
-    
+    function generateChart(data) {
+        // console.log("Gerando gráfico com os dados:", data);
 
-    searchBtn.addEventListener('click', function(event) {
+        const exercisesArray = data.data
+
+        console.log("exercisesArray", exercisesArray);
+
+        let listWeight = [];
+        let listDate = [];
+
+        for (let i = 0; i < exercisesArray.length; i++) {
+            const exercise = exercisesArray[i];
+            // console.log("exercise", exercise);
+            listWeight.push(exercise.weight_kg);
+            listDate.push(exercise.training_date);
+        }
+
+        console.log("listWeight", listWeight);
+        console.log("listDate", listDate);
+
+
+        const ctx = document.getElementById('teste');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: listDate,
+            datasets: [{
+                label: 'Evolução da carga de treino',
+                data: listWeight,
+                borderWidth: 1
+            }]
+            },
+            options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+            }
+        });
+    }
+
+    searchBtn.addEventListener('click', async function(event) {
         event.preventDefault();
         console.log('Botão Buscar clicado');
 
         const selectedOption = exerciseSelect.options[exerciseSelect.selectedIndex];
 
         const selectedExerciseId = selectedOption.value;
-        console.log('Exercício selecionado:', selectedExerciseId);
 
-        getFilteredRealizedExercises(selectedExerciseId)
-    });
-    
+        const returnedData = await getFilteredRealizedExercises(selectedExerciseId);
 
-    const ctx = document.getElementById('progressChart');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            borderWidth: 1
-        }]
-        },
-        options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-        }
+        generateChart(returnedData)
     });
 
 });

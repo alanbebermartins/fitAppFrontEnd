@@ -43,14 +43,19 @@
                     </select>
                 </div>
             </div>
-            <div class="w-100 d-flex justify-content-center pt-3">
+            <div class="w-100 d-flex justify-content-center pt-3 gap-3">
                 <button type="submit" class="btn btn-primary" id="searchBtn">Buscar</button>
+                <button type="submit" class="btn btn-primary" id="clearBtn">Limpar consulta</button>
             </div>
         </form>
     </div>
 
     <div class="bg-white p-4 w-100 rounded-4" style="max-width: 980px">
+        <h4 class="text-black mb-3 w-100 text-center">Gráfico de evolução da carga de treino</h4>
         <canvas id="progressChart"></canvas>
+    </div>
+    <div class="bg-white p-4 w-100 rounded-4" style="max-width: 980px">
+        <canvas id="teste"></canvas>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.0/chart.umd.min.js"></script>
