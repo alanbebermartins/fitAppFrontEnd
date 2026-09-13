@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/home", "destination": "/dashboard.html" },
+    { "source": "/home/", "destination": "/dashboard.html" },
+    { "source": "/grafico-de-progresso", "destination": "/progress-graph.html" },
+    { "source": "/grafico-de-progresso/", "destination": "/progress-graph.html" }
+  ]
+}
